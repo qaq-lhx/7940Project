@@ -6,25 +6,21 @@ import os
 import queue
 
 import flask
-import redis
 from telegram import Bot, Update
 from telegram.ext import CommandHandler, MessageHandler, Filters, CallbackContext, Dispatcher
 
 global bot
 global dispatcher
-global redis_instance
 global app
 
 
 def init():
     global bot
     global dispatcher
-    global redis_instance
     global app
     bot = Bot(token=os.environ['TELEGRAM_ACCESS_TOKEN'])
     dispatcher = Dispatcher(bot=bot, update_queue=queue.Queue())
-    redis_instance = redis.Redis(host=(os.environ['REDIS_HOST']), password=(os.environ['REDIS_PASSWORD']),
-                                 port=int(os.environ['REDIS_PORT']))
+
     # You can set this logging module, so you will know when and why things do not work as expected
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                         level=logging.INFO)
@@ -32,7 +28,6 @@ def init():
     echo_handler = MessageHandler(Filters.text & (~Filters.command), echo)
     dispatcher.add_handler(echo_handler)
     # on different commands - answer in Telegram
-    dispatcher.add_handler(CommandHandler('add', add_command))
     dispatcher.add_handler(CommandHandler('help', help_command))
     dispatcher.add_handler(CommandHandler('hello', hello_command))
     app = flask.Flask(__name__)
@@ -51,17 +46,6 @@ def help_command(update: Update, context: CallbackContext) -> None:
     """Send a message when the command /help is issued."""
     update.message.reply_text('Helping you helping you.')
 
-
-def add_command(update: Update, context: CallbackContext) -> None:
-    """Send a message when the command /add is issued."""
-    try:
-        logging.info(context.args[0])
-        msg = context.args[0]  # /add keyword <-- this should store the keyword
-        redis_instance.incr(msg)
-        update.message.reply_text(
-            'You have said ' + msg + ' for ' + redis_instance.get(msg).decode('UTF-8') + ' times.')
-    except (IndexError, ValueError):
-        update.message.reply_text('Usage: /add <keyword>')
 
 
 def hello_command(update: Update, context: CallbackContext) -> None:
