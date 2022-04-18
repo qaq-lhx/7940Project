@@ -1,0 +1,44 @@
+name: Deploy to Google Cloud Run
+on:
+  push:
+    branches:
+      - master
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout the ${{ github.ref_name }} branch
+        uses: actions/checkout@v3
+      - name: Scan for security vulnerabilities
+        uses: aufdenpunkt/python-safety-check@master
+        env:
+          DEP_PATH: requirements.txt
+      - id: auth
+        name: Establish authentication to Google Cloud
+        uses: google-github-actions/auth@v0
+        with:
+          workload_identity_provider: projects/407788583471/locations/global/workloadIdentityPools/github/providers/github-action
+          service_account: cloud-run-source-code-deployer@telegram-helloworldbot.iam.gserviceaccount.com
+      - id: deploy
+        name: Deploy from source to Google Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v0
+        env:
+          REDIS_HOST: 'redis-11243.c299.asia-northeast1-1.gce.cloud.redislabs.com'
+          REDIS_PORT: '11243'
+        with:
+          service: telegram-helloworldbot
+          region: asia-east2
+          env_vars: |
+            REDIS_HOST=redis-11243.c299.asia-northeast1-1.gce.cloud.redislabs.com
+            REDIS_PORT=11243
+          secrets: |
+            TELEGRAM_ACCESS_TOKEN=TELEGRAM_ACCESS_TOKEN:latest
+            TELEGRAM_WEBHOOK_SECRET_PATH=TELEGRAM_WEBHOOK_SECRET_PATH:latest
+            REDIS_PASSWORD=REDIS_PASSWORD:latest
+          project_id: telegram-helloworldbot
+          source: .
+      - name: Set webhook URL
+        run: curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_ACCESS_TOKEN }}/setWebhook?url=${{ steps.deploy.outputs.url }}/${{ secrets.TELEGRAM_WEBHOOK_SECRET_PATH }}"
