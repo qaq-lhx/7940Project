@@ -3,6 +3,8 @@ import logging
 from telegram import Update
 from telegram.ext import MessageHandler, Filters, CallbackContext
 
+from handler import GetChatbot
+
 
 def echo(update: Update, context: CallbackContext):
     reply_message = update.message.text.upper()
@@ -11,4 +13,5 @@ def echo(update: Update, context: CallbackContext):
     context.bot.send_message(chat_id=update.effective_chat.id, text=reply_message)
 
 
-Handler = MessageHandler(Filters.text & (~Filters.command), echo)
+chatbot = GetChatbot()
+Handler = chatbot, MessageHandler(Filters.text & (~Filters.command), echo)
