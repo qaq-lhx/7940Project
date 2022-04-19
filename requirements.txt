@@ -1,4 +1,4 @@
 python-telegram-bot>=13.1
 flask~=2.1.1
 gunicorn~=20.1.0
-mysql
+mysql-connector-python~=8.0.28
