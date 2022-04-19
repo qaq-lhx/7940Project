@@ -13,17 +13,12 @@ def hello_command(update: Update, context: CallbackContext) -> None:
     # preparing a cursor object
     cursorObject = chatbot().db.cursor()
     cursorObject.execute( """
-        SELECT name FROM MovieInfo WHERE id IS ? """, ( movieID) )
-    #chatbot().db.commit()
-    #query = "SELECT NAME, ROLL FROM STUDENT"
-    #cursorObject.execute(query)
-   
-    myresult = cursorObject.fetchall()
-    print('searching result is '+str(myresult))
-    update.message.reply_text('search result : '+ myresult)
+        SELECT name FROM MovieInfo WHERE id = %s """, ( movieID) )
     
-    # disconnecting from server
-    #chatbot().db.close()
+    myresult = cursorObject.fetchall()
+    for x in myresult:
+        update.message.reply_text('search result : '+ str(x[0]))
+
 
 
 chatbot = GetChatbot()
