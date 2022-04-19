@@ -12,3 +12,4 @@ class Env:
         self.db_name = os.environ['DB_NAME']
         self.db_user = os.environ['DB_USERNAME']
         self.db_password = os.environ['DB_PASSWORD']
+        print('test', self.db_host, self.db_port, self.db_name, self.db_user)
