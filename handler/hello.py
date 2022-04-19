@@ -7,7 +7,9 @@ from handler import GetChatbot
 
 
 def hello_command(update: Update, context: CallbackContext) -> None:
+    print('hello command is called')
     movieID = context.args[0]
+    print('movie id is '+str(movieID))
     # preparing a cursor object
     cursorObject = chatbot().db.cursor()
     cursorObject.execute( """
@@ -17,6 +19,7 @@ def hello_command(update: Update, context: CallbackContext) -> None:
     #cursorObject.execute(query)
    
     myresult = cursorObject.fetchall()
+    print('searching result is '+str(myresult))
     update.message.reply_text('search result : '+ myresult)
     
     # disconnecting from server
