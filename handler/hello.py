@@ -13,7 +13,7 @@ def hello_command(update: Update, context: CallbackContext) -> None:
     # preparing a cursor object
     cursorObject = chatbot().db.cursor()
     cursorObject.execute( """
-        SELECT name FROM MovieInfo WHERE id = %s """, ( movieID) )
+        SELECT name FROM MovieInfo WHERE id = %s """, ( movieID,) )
     
     myresult = cursorObject.fetchall()
     for x in myresult:
