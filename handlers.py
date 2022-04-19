@@ -1,5 +1,4 @@
-from tensorboard import summary
-from handler import start,message,help,hello,rating,search_rating,turn_to_rating,add_label,write_comment,next_movie_rating,search_view,summary,view_comment,next_movie_view
+from handler import start,message,help,hello,rating,search_rating,turn_to_rating,add_label,write_comment,next_movie_rating,search_view,summary,view_comment,next_movie_view,summary
 
 Handlers = [
     start.Handler,
