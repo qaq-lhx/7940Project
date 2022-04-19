@@ -18,7 +18,7 @@ class Chatbot:
         self.bot = telegram.Bot(token=env.telegram_access_token)
         self.db = mysql.connector.connect(
             host=env.db_host,
-            user=env.db_user,
+            user=env.db_username,
             passwd=env.db_password,
             database=env.db_name
         )

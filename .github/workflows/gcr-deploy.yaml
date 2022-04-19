@@ -32,7 +32,6 @@ jobs:
             DB_HOST=34.96.231.6
             DB_PORT=3306
             DB_NAME=chatbot
-            DB_USER=kevinbot
           secrets: |
             TELEGRAM_ACCESS_TOKEN=TELEGRAM_ACCESS_TOKEN:latest
             TELEGRAM_WEBHOOK_SECRET_PATH=TELEGRAM_WEBHOOK_SECRET_PATH:latest
