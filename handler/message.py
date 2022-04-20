@@ -19,10 +19,11 @@ def echo(update: Update, context: CallbackContext):
 def handle_text_message(update: Update, context: CallbackContext):
     chat = update.effective_chat
     if chat is not None:
-        raw_data = fetch_chat(chat.id, chatbot().db)
+        instance, raw_data = fetch_chat(chat.id, chatbot().db)
         if raw_data is not None:
             query_data = json.loads(raw_data)
             data = {
+                'instance': instance,
                 'text': update.message.text,
                 'data': query_data['data']
             }
