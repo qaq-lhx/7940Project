@@ -5,8 +5,8 @@ import mysql.connector
 import telegram
 import telegram.ext
 
-import all_types_of_handlers
 import environment
+import handlers
 import webhook
 
 
@@ -28,7 +28,7 @@ class Chatbot:
         else:
             self.updater = telegram.ext.Updater(bot=self.bot)
             self.dispatcher = self.updater.dispatcher
-        for handler in all_types_of_handlers.AllTypesOfHandlers:
+        for handler in handlers.Handlers:
             handler[0].provide(self)
             self.dispatcher.add_handler(handler[1])
         if env.production:

@@ -1,7 +1,9 @@
-from handler import start, help, hello, rating, search_rating, turn_to_rating, add_label, \
-    write_comment, next_movie_rating, search_view, view_comment, next_movie_view, summary, search
+from handler import message, callback_query_dispatcher, start, help, hello, rating, search_rating, turn_to_rating, \
+    add_label, write_comment, next_movie_rating, search_view, view_comment, next_movie_view, summary, search
 
 Handlers = [
+    message.Handler,
+    callback_query_dispatcher.Handler,
     start.Handler,
     help.Handler,
     hello.Handler,
