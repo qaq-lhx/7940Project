@@ -29,9 +29,7 @@ class Chatbot:
             self.updater = telegram.ext.Updater(bot=self.bot)
             self.dispatcher = self.updater.dispatcher
         for handler in handlers.Handlers:
-            handler[0].chatbot = self
-            if handler[0].on_receive is not None:
-                handler[0].on_receive(self)
+            handler[0].provide(self)
             self.dispatcher.add_handler(handler[1])
         if env.production:
             webhook.WebHook(self.env, self.app, self.bot, self.dispatcher)
