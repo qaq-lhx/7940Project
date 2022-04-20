@@ -1,5 +1,5 @@
 from handler import message, callback_query_dispatcher, start, help, hello, rating, search_rating, turn_to_rating, \
-    add_label, write_comment, next_movie_rating, search_view, view_comment, next_movie_view, summary, search
+    add_label, write_comment, next_movie_rating, search_view, view_comment, next_movie_view, summary, search, button
 
 Handlers = [
     message.Handler,
@@ -18,4 +18,5 @@ Handlers = [
     view_comment.Handler,
     next_movie_view.Handler,
     search.Handler,
+    button.Handler,
 ]
