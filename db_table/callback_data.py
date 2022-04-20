@@ -3,7 +3,7 @@ def fetch_all_from_stored_procedure_selects(cursor):
     return [result for sublist in results for result in sublist]
 
 
-def store(callback_data, db):
+def store(callback_data: str, db):
     cursor = db.cursor()
     cursor.callproc('StoreCallbackData', (callback_data,))
     results = fetch_all_from_stored_procedure_selects(cursor)
@@ -13,7 +13,7 @@ def store(callback_data, db):
         return None
 
 
-def fetch(callback_data_id, db):
+def fetch(callback_data_id: int, db):
     cursor = db.cursor()
     cursor.callproc('FetchCallbackData', (callback_data_id,))
     results = fetch_all_from_stored_procedure_selects(cursor)
@@ -23,7 +23,7 @@ def fetch(callback_data_id, db):
         return None
 
 
-def store_chat(chat_id, callback_data, db):
+def store_chat(chat_id: int, callback_data: str, db):
     cursor = db.cursor()
     cursor.callproc('StoreCallbackDataWithChat', (chat_id, callback_data))
     results = fetch_all_from_stored_procedure_selects(cursor)
@@ -33,7 +33,7 @@ def store_chat(chat_id, callback_data, db):
         return None
 
 
-def fetch_chat(chat_id, db):
+def fetch_chat(chat_id: int, db):
     cursor = db.cursor()
     cursor.callproc('FetchLatestCallbackDataByChat', (chat_id,))
     results = fetch_all_from_stored_procedure_selects(cursor)
@@ -43,11 +43,11 @@ def fetch_chat(chat_id, db):
         return None
 
 
-def remove(callback_data_id, db):
+def remove(callback_data_id: int, db):
     cursor = db.cursor()
     cursor.callproc('RemoveCallbackData', (callback_data_id,))
 
 
-def remove_chat_all(chat_id, db):
+def remove_chat_all(chat_id: int, db):
     cursor = db.cursor()
     cursor.callproc('RemoveAllCallbackDataByChat', (chat_id,))
