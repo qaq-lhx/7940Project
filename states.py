@@ -1,5 +1,5 @@
 from handler import search_callback
 
 States = {
-    'search': search_callback.Handler,
+    'search_results': search_callback.Handler,
 }

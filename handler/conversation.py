@@ -1,15 +1,13 @@
-import logging
-
 from telegram import Update
-from telegram.ext import ConversationHandler, CallbackContext
+from telegram.ext import ConversationHandler, CallbackContext, CallbackQueryHandler
 
-from handler import GetChatbot, start
+from handler import GetChatbot
+from handlers import Handlers
 from states import States
 
 
-def hello_command(update: Update, context: CallbackContext) -> None:
-    logging.info(context.args)
-    update.message.reply_text('Good day, ' + ' '.join(context.args) + '!')
+def just_answer(update: Update, context: CallbackContext):
+    update.callback_query.answer()
 
 
 def on_receive_chatbot(c):
@@ -19,8 +17,9 @@ def on_receive_chatbot(c):
 
 chatbot = GetChatbot()
 chatbot.on_receive = on_receive_chatbot
+just_answer_handler = CallbackQueryHandler(just_answer)
 Handler = chatbot, ConversationHandler(
-    entry_points=[start.Handler[1]],
+    entry_points=[handler[1] for handler in Handlers],
     states={key: [value[1]] for key, value in States.items()},
-    fallbacks=[start.Handler[1]]
+    fallbacks=[just_answer_handler],
 )
