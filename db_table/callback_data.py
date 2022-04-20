@@ -11,6 +11,7 @@ def store(callback_data: str, db) -> Optional[int]:
     cursor.callproc('StoreCallbackData', (callback_data,))
     results = fetch_all_from_stored_procedure_selects(cursor)
     cursor.close()
+    db.commit()
     if len(results) > 0 and len(results[0]) > 0:
         return results[0][0]
     else:
@@ -33,6 +34,7 @@ def store_chat(chat_id: int, callback_data: str, db) -> Optional[int]:
     cursor.callproc('StoreCallbackDataWithChat', (chat_id, callback_data))
     results = fetch_all_from_stored_procedure_selects(cursor)
     cursor.close()
+    db.commit()
     if len(results) > 0 and len(results[0]) > 0:
         return results[0][0]
     else:
