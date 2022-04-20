@@ -1,7 +1,7 @@
 import json
 from typing import Optional, TYPE_CHECKING
 
-from db_table.callback_data import store, store_chat
+from db_table.callback_data import store, store_chat, remove
 
 if TYPE_CHECKING:
     from telegram import Chat
@@ -21,3 +21,7 @@ def callback_chat(chat: Optional['Chat'], call: str, data, db) -> int:
             'data': data
         }), db)
     return -1
+
+
+def undo_callback_chat(callback_chat_instance: int, db):
+    remove(callback_chat_instance, db)
