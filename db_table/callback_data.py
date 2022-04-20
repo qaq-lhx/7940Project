@@ -23,6 +23,31 @@ def fetch(callback_data_id, db):
         return None
 
 
+def store_chat(chat_id, callback_data, db):
+    cursor = db.cursor()
+    cursor.callproc('StoreCallbackDataWithChat', (chat_id, callback_data))
+    results = fetch_all_from_stored_procedure_selects(cursor)
+    if len(results) > 0 and len(results[0]) > 0:
+        return results[0][0]
+    else:
+        return None
+
+
+def fetch_chat(chat_id, db):
+    cursor = db.cursor()
+    cursor.callproc('FetchLatestCallbackDataByChat', (chat_id,))
+    results = fetch_all_from_stored_procedure_selects(cursor)
+    if len(results) > 0 and len(results[0]) > 0:
+        return results[0][0]
+    else:
+        return None
+
+
 def remove(callback_data_id, db):
     cursor = db.cursor()
     cursor.callproc('RemoveCallbackData', (callback_data_id,))
+
+
+def remove_chat_all(chat_id, db):
+    cursor = db.cursor()
+    cursor.callproc('RemoveAllCallbackDataByChat', (chat_id,))
