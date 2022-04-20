@@ -22,7 +22,11 @@ def handle_text_message(update: Update, context: CallbackContext):
         raw_data = fetch_chat(chat.id, chatbot().db)
         if raw_data is not None:
             query_data = json.loads(raw_data)
-            Callbacks[query_data['call']][1](update.callback_query, query_data['data'], update, context)
+            data = {
+                'text': update.message.text,
+                'data': query_data['data']
+            }
+            Callbacks[query_data['call']][1](update.callback_query, data, update, context)
             return
     echo(update, context)
 
