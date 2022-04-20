@@ -25,9 +25,9 @@ def search_movie_in_db(keywords, db):
     if need_more > 0:
         cursor.execute("""select id, name, year
                 from MovieInfo
-                where name like %s
+                where name like %s and id not in (%s)
                 order by name
-                limit %s;""", (exact_match_keyword + '%', need_more))
+                limit %s;""", ('%' + exact_match_keyword + '%', [result[0] for result in results], need_more))
         results += cursor.fetchall()
     need_more = limit - len(results)
     if need_more > 0:
@@ -35,8 +35,9 @@ def search_movie_in_db(keywords, db):
         matcher = '({}) ("{}")'.format(partial_match_keyword, exact_match_keyword)
         cursor.execute("""select match(name, overview) against(%s in boolean mode) score, id, name, year
             from MovieInfo
+            where id not in (%s)
             having score > 0
             order by score
-            desc limit %s;""", (matcher, need_more))
+            desc limit %s;""", (matcher, [result[0] for result in results], need_more))
         results += [result[1:] for result in cursor.fetchall()]
     return results
