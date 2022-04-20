@@ -1,9 +1,10 @@
-from handler import start, message, help, hello, rating, search_rating, turn_to_rating, add_label, write_comment, \
-    next_movie_rating, search_view, view_comment, next_movie_view, summary, search
+from handler import start, message, conversation, help, hello, rating, search_rating, turn_to_rating, add_label, \
+    write_comment, next_movie_rating, search_view, view_comment, next_movie_view, summary, search
 
 Handlers = [
     start.Handler,
     message.Handler,
+    conversation.Handler,
     help.Handler,
     hello.Handler,
     rating.Handler,
