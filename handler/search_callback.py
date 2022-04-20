@@ -15,7 +15,11 @@ def show_movie_info(query, query_data):
         [InlineKeyboardButton('\u1438', callback_data=callback('search_callback', {
             'action': 'search_again',
             'search_keywords': keywords
-        }, chatbot().db))],
+        }, chatbot().db)),
+        #click to evaluate a movie
+        InlineKeyboardButton('evaluate',callback_data=callback('evaluate',{'movie_id':movie_id}, chatbot().db)),
+        #click to view comment of a movie
+        InlineKeyboardButton('comment',callback_data=callback('view',{'movie_id':movie_id}, chatbot().db))],
     ])
     if movie is None:
         message = 'Oops! I\'m sorry. I can\'t tell you more about the movie.'
