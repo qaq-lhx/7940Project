@@ -35,10 +35,10 @@ def store_chat(chat_id: int, callback_data: str, db):
 
 def fetch_chat(chat_id: int, db):
     cursor = db.cursor()
-    cursor.callproc('FetchLatestCallbackDataByChat', (chat_id,))
+    cursor.callproc('FetchLatestCallbackDataWithIdByChat', (chat_id,))
     results = fetch_all_from_stored_procedure_selects(cursor)
     if len(results) > 0 and len(results[0]) > 0:
-        return results[0][0]
+        return results[0][0], results[0][1]
     else:
         return None
 
