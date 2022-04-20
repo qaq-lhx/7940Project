@@ -1,22 +1,20 @@
-import json
-
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CommandHandler, CallbackContext
 
-from db_table.callback_data import store
+from callback_utils import callback
 from db_table.movie_info import search_movie_in_db
 from handler import GetChatbot
 
 
-def build_search_results(keywords, results):
+def build_search_results(keywords, results, db):
     reply_markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton(
             '{} ({})'.format(result[1], result[2]),
-            callback_data=str(store(json.dumps({
+            callback_data=callback('search_callback', {
                 'action': 'show_movie_info',
                 'selected_id': result[0],
                 'search_keywords': keywords
-            }), chatbot().db))
+            }, db)
         )] for result in results])
     if len(results) < 1:
         return 'I can\'t find any movie for you.', None
@@ -32,7 +30,7 @@ def search_command(update: Update, context: CallbackContext):
         update.message.reply_text('Usage: /search <keyword>')
         return
     keywords = context.args
-    message, reply_markup = build_search_results(keywords, search_movie_in_db(keywords, chatbot().db))
+    message, reply_markup = build_search_results(keywords, search_movie_in_db(keywords, chatbot().db), chatbot().db)
     if reply_markup is None:
         update.message.reply_text(message)
         return
