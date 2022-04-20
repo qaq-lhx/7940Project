@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 class GetChatbot:
     def __init__(self):
         self.chatbot: Union['Chatbot', None] = None
-        self.on_receive = Union[Callable[['Chatbot'], None], None]
+        self.on_receive: Union[Callable[['Chatbot'], None], None] = None
 
     def __call__(self, *args, **kwargs) -> 'Chatbot':
         return self.chatbot
