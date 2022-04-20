@@ -5,6 +5,7 @@ def get_movie_in_db(movie_id, db):
         where id = %s
         limit 1;""", (movie_id,))
     results = cursor.fetchall()
+    cursor.close()
     if len(results) > 0:
         return results[0]
     else:
@@ -52,4 +53,5 @@ def search_movie_in_db(keywords, db):
             order by score
             desc limit %s;""".format(exclude_ids), arguments)
         results += [result[1:] for result in cursor.fetchall()]
+    cursor.close()
     return results
