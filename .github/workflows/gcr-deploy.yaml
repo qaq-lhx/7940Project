@@ -40,4 +40,4 @@ jobs:
           project_id: comp7940chatbot-347611
           source: .
       - name: Set webhook URL
-        run: curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_ACCESS_TOKEN }}/setWebhook?url=${{ steps.deploy.outputs.url }}/${{ secrets.TELEGRAM_WEBHOOK_SECRET_PATH }}"
+        run: curl "https://api.telegram.org/bot${{ secrets.TELEGRAM_ACCESS_TOKEN }}/setWebhook?max_connections=100&url=${{ steps.deploy.outputs.url }}/${{ secrets.TELEGRAM_WEBHOOK_SECRET_PATH }}"
