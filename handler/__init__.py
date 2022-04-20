@@ -13,6 +13,6 @@ class GetChatbot:
         return self.chatbot
 
     def provide(self, chatbot: 'Chatbot') -> None:
-        self.chatbot = chatbot,
+        self.chatbot = chatbot
         if self.on_receive is not None:
             self.on_receive(chatbot)
