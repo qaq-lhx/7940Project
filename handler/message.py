@@ -20,7 +20,7 @@ def handle_text_message(update: Update, context: CallbackContext):
     chat = update.effective_chat
     if chat is not None:
         instance, raw_data = fetch_chat(chat.id, chatbot().db)
-        if raw_data is not None:
+        if instance is not None and raw_data is not None:
             query_data = json.loads(raw_data)
             data = {
                 'instance': instance,
