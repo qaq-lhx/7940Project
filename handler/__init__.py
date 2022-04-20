@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Union, Callable
+from typing import TYPE_CHECKING, Callable, Optional
 
 if TYPE_CHECKING:
     from chatbot import Chatbot
@@ -6,8 +6,8 @@ if TYPE_CHECKING:
 
 class GetChatbot:
     def __init__(self):
-        self.chatbot: Union['Chatbot', None] = None
-        self.on_receive: Union[Callable[['Chatbot'], None], None] = None
+        self.chatbot: Optional['Chatbot'] = None
+        self.on_receive: Optional[Callable[['Chatbot'], None]] = None
 
     def __call__(self, *args, **kwargs) -> 'Chatbot':
         return self.chatbot
