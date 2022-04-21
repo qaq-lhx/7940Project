@@ -1,4 +1,4 @@
-from handler import search_callback, button_callback, help_callback,rating,rating_callback
+from handler import search_callback, button_callback, help_callback,rating,rating_callback,label_callback
 
 
 Callbacks = {
@@ -7,4 +7,5 @@ Callbacks = {
     'help_callback': help_callback.Callback,
     'evaluate':rating.Callback,
     'rating_callback':rating_callback.Callback,
+    'label_callback':label_callback.Callback,
 }
