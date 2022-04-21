@@ -26,6 +26,7 @@ def build_search_results(keywords, results, db):
 
 
 def search_command(update: Update, context: CallbackContext):
+
     if len(context.args) < 1:
         update.message.reply_text('Usage: /search <keyword>')
         return

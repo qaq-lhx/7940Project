@@ -55,3 +55,34 @@ def search_movie_in_db(keywords, db):
         results += [result[1:] for result in cursor.fetchall()]
     cursor.close()
     return results
+
+def recommend_movie_in_db(keywords, db):
+    like_keyword =' '.join(keywords)
+    limit = 5
+    cursor = db.cursor()
+    cursor.execute("""SELECT MovieInfo.id, MovieInfo.name, MovieInfo.year
+        FROM MovieInfo INNER JOIN Rating ON MovieInfo.id=Rating.movieID 
+        WHERE MovieInfo.genres LIKE %s 
+        GROUP BY MovieInfo.name, MovieInfo.id 
+        Having AVG(Rating.rating) >=4
+        order by AVG(Rating.rating) 
+        limit %s;""", ('%' + like_keyword + '%', limit))
+    results = cursor.fetchall()
+    
+    cursor.close()
+    return results
+
+def get_movie_AVGrating_in_db(movie_id, db):
+    cursor = db.cursor()
+    cursor.execute("""SELECT movieID, AVG(rating)
+        FROM Rating 
+        WHERE movieID = %s 
+        group by movieID 
+        Having AVG(Rating.rating) >=4
+        limit 1;""", (movie_id,))
+    results = cursor.fetchall()
+    cursor.close()
+    if len(results) > 0:
+        return results[0]
+    else:
+        return None
