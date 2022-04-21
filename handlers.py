@@ -1,5 +1,4 @@
-from handler import text_message_dispatcher, callback_query_dispatcher, start, help, search, button, \
-    recommend, default
+from handler import text_message_dispatcher, callback_query_dispatcher, start, help, search, recommend, default
 
 Handlers = [
     text_message_dispatcher.Handler,
@@ -7,7 +6,6 @@ Handlers = [
     start.Handler,
     help.Handler,
     search.Handler,
-    button.Handler,
     recommend.Handler,
     default.Handler,
 ]
