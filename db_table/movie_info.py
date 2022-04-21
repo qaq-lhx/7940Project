@@ -1,4 +1,7 @@
-def get_movie_in_db(movie_id, db):
+from typing import List, Optional
+
+
+def get_movie_in_db(movie_id: int, db):
     cursor = db.cursor()
     cursor.execute("""select id, name, imdbID, poster, genres, year, overview
         from MovieInfo
@@ -12,52 +15,85 @@ def get_movie_in_db(movie_id, db):
         return None
 
 
-def search_movie_in_db(keywords, db):
-    exact_match_keyword = ' '.join(keywords)
-    limit = 10
+def search_movie_in_db_by_exact_match(exact_match_keyword: str, excluded_ids: List[int], limit: int, db,
+                                      prefix_matching: bool = False):
     cursor = db.cursor()
+    if prefix_matching:
+        keyword = exact_match_keyword + '%'
+    else:
+        keyword = '%' + exact_match_keyword + '%'
+    if len(excluded_ids) > 0:
+        additional_condition = ' and id not in ({})'.format(', '.join(['%s'] * len(excluded_ids)))
+        arguments = (keyword,) + tuple(excluded_ids) + (limit,)
+    else:
+        additional_condition = ''
+        arguments = (keyword, limit)
     cursor.execute("""select id, name, year
-        from MovieInfo
-        where name like %s
-        order by name
-        limit %s;""", (exact_match_keyword + '%', limit))
-    results = cursor.fetchall()
-    need_more = limit - len(results)
-    if need_more > 0:
-        if len(results) > 0:
-            exclude_ids = ' and id not in ({})'.format(', '.join(['%s'] * len(results)))
-            arguments = ('%' + exact_match_keyword + '%',) + tuple([result[0] for result in results]) + (need_more,)
-        else:
-            exclude_ids = ''
-            arguments = ('%' + exact_match_keyword + '%', need_more)
-        cursor.execute("""select id, name, year
-                from MovieInfo
-                where name like %s{}
-                order by name
-                limit %s;""".format(exclude_ids), arguments)
-        results += cursor.fetchall()
-    need_more = limit - len(results)
-    if need_more > 0:
-        partial_match_keyword = ' '.join([keyword + '*' for keyword in keywords])
-        matcher = '({}) ("{}")'.format(partial_match_keyword, exact_match_keyword)
-        if len(results) > 0:
-            exclude_ids = 'where id not in ({})'.format(', '.join(['%s'] * len(results)))
-            arguments = (matcher,) + tuple([result[0] for result in results]) + (need_more,)
-        else:
-            exclude_ids = ''
-            arguments = (matcher, need_more)
-        cursor.execute("""select match(name, overview) against(%s in boolean mode) score, id, name, year
             from MovieInfo
-            {}
-            having score > 0
-            order by score
-            desc limit %s;""".format(exclude_ids), arguments)
-        results += [result[1:] for result in cursor.fetchall()]
+            where name like %s{}
+            order by name
+            limit %s;""".format(additional_condition), arguments)
+    results = cursor.fetchall()
     cursor.close()
     return results
 
+
+def search_movie_in_db_by_fulltext_match(keywords: List[str], excluded_ids: List[int], limit: int, db,
+                                         exact_match_keyword: Optional[str] = None):
+    cursor = db.cursor()
+    partial_match_keyword = ' '.join([keyword + '*' for keyword in keywords])
+    if exact_match_keyword is None:
+        exact_match_keyword = ' '.join(keywords)
+    matcher = '({}) ("{}")'.format(partial_match_keyword, exact_match_keyword)
+    if len(excluded_ids) > 0:
+        additional_condition = 'where id not in ({})'.format(', '.join(['%s'] * len(excluded_ids)))
+        arguments = (matcher,) + tuple(excluded_ids) + (limit,)
+    else:
+        additional_condition = ''
+        arguments = (matcher, limit)
+    # noinspection SqlAggregates
+    cursor.execute("""select match(name, overview) against(%s in boolean mode) score, id, name, year
+                    from MovieInfo
+                    {}
+                    having score > 0
+                    order by score
+                    desc limit %s;""".format(additional_condition), arguments)
+    results = [result[1:] for result in cursor.fetchall()]
+    cursor.close()
+    return results
+
+
+def search_movie_in_db(keywords: List[str], excluded_ids: List[int], limit: int, db):
+    exact_match_keyword = ' '.join(keywords)
+    results = search_movie_in_db_by_exact_match(
+        exact_match_keyword,
+        excluded_ids,
+        limit,
+        db,
+        prefix_matching=True
+    )
+    need_more = limit - len(results)
+    if need_more > 0:
+        results += search_movie_in_db_by_exact_match(
+            exact_match_keyword,
+            excluded_ids + [result[0] for result in results],
+            need_more,
+            db
+        )
+        need_more = limit - len(results)
+        if need_more > 0:
+            results += search_movie_in_db_by_fulltext_match(
+                keywords,
+                excluded_ids + [result[0] for result in results],
+                need_more,
+                db,
+                exact_match_keyword=exact_match_keyword
+            )
+    return results
+
+
 def recommend_movie_in_db(keywords, db):
-    like_keyword =' '.join(keywords)
+    like_keyword = ' '.join(keywords)
     limit = 5
     cursor = db.cursor()
     cursor.execute("""SELECT MovieInfo.id, MovieInfo.name, MovieInfo.year
@@ -68,9 +104,10 @@ def recommend_movie_in_db(keywords, db):
         order by AVG(Rating.rating) 
         limit %s;""", ('%' + like_keyword + '%', limit))
     results = cursor.fetchall()
-    
+
     cursor.close()
     return results
+
 
 def get_movie_AVGrating_in_db(movie_id, db):
     cursor = db.cursor()
