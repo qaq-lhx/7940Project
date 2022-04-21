@@ -40,6 +40,7 @@ def rating_callback(query: CallbackQuery, query_data, update: Update, context: C
         'command':'custom_label',
         'movie_id': movie_id,
         'more_label':result,
+        'more_label':query_data['more_label'],
         'added_label': []
     }, chatbot().db))]])
     button.extend([[InlineKeyboardButton('write comment',callback_data=callback('label_callback',{
