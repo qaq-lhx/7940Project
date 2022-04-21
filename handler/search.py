@@ -10,6 +10,7 @@ from db_table.callback_data import store
 from db_table.movie_info import search_movie_in_db
 from db_table.rating import get_movie_average_ratings
 from handler import GetChatbot
+from words import get_some_random_words
 
 
 def search_with_ratings(keywords: List[str], excluded_ids: List[int], limit: int, db) -> \
@@ -65,7 +66,7 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
         if update_markup_only:
             return None, None
         else:
-            return 'I can\'t find any movie for you.', None
+            return get_some_random_words('found_no_movie'), None
     if results_id is None:
         results_id = store(json.dumps(results), db)
     total = len(results)
@@ -74,22 +75,30 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
     if need_pagination:
         prev_page, pagination_page_numbers, next_page = build_pagination_page_numbers(total, page, page_limit)
         results_to_show = results[(page - 1) * page_limit:page * page_limit]
-        pagination_buttons = [build_pagination_button(results_id, page, page_number, page_limit, db) for page_number in
-                              pagination_page_numbers]
+        pagination_buttons = [[build_pagination_button(results_id, page, page_number, page_limit, db) for page_number in
+                               pagination_page_numbers]]
+        prev_next_buttons = []
         if prev_page is not None:
-            pagination_buttons.insert(0, InlineKeyboardButton('\u1438', callback_data=callback('search_callback', {
+            prev_next_buttons.append(InlineKeyboardButton('\u1438', callback_data=callback('search_callback', {
                 'action': 'show_search_results',
                 'search_results_id': results_id,
                 'page': prev_page,
                 'page_limit': page_limit
             }, db)))
         if next_page is not None:
-            pagination_buttons.append(InlineKeyboardButton('\u1433', callback_data=callback('search_callback', {
+            prev_next_buttons.append(InlineKeyboardButton('\u1433', callback_data=callback('search_callback', {
                 'action': 'show_search_results',
                 'search_results_id': results_id,
                 'page': next_page,
                 'page_limit': page_limit
             }, db)))
+        if len(prev_next_buttons) > 1:
+            pagination_buttons.append(prev_next_buttons)
+        elif len(prev_next_buttons) == 1:
+            if prev_page is not None:
+                pagination_buttons[0].insert(0, prev_next_buttons[0])
+            elif next_page is not None:
+                pagination_buttons[0].append(prev_next_buttons[0])
     else:
         results_to_show = results
     buttons_to_show = [[InlineKeyboardButton(
@@ -107,14 +116,14 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
         }, db)
     )] for result in results_to_show]
     if need_pagination:
-        buttons_to_show.append(pagination_buttons)
+        buttons_to_show += pagination_buttons
     if update_markup_only:
         message = None
     else:
         if len(results) > 1:
-            message = 'Here are the movies I found:'
+            message = get_some_random_words('found_some_movies')
         else:
-            message = 'Here is the movie I found:'
+            message = get_some_random_words('found_a_movie')
     return message, InlineKeyboardMarkup(buttons_to_show)
 
 
@@ -149,7 +158,7 @@ def search_command(update: Update, context: CallbackContext):
         'page_limit': chatbot().env.page_limit
     }
     if len(context.args) < 1:
-        update.message.reply_text('What do you want to search for?')
+        update.message.reply_text(get_some_random_words('need_search_keyword'))
         callback_chat(update.effective_chat, 'search_callback', query_data, chatbot().db)
     else:
         query_data['search_keywords'] = context.args

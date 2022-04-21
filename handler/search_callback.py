@@ -3,9 +3,11 @@ import json
 from telegram import Update, CallbackQuery
 from telegram.ext import CallbackContext
 
+from callback_utils import undo_callback_chat_all
 from db_table.callback_data import fetch
 from handler import GetChatbot
 from handler.search import build_search_results, new_search
+from words import get_some_random_words
 
 
 def show_search_results(query, query_data, update: Update, context: CallbackContext):
@@ -15,7 +17,9 @@ def show_search_results(query, query_data, update: Update, context: CallbackCont
     update_markup_only = 'update_text' not in query_data or not query_data['update_text']
     raw_search_results = fetch(results_id, chatbot().db)
     if raw_search_results is None:
-        return query.edit_message_text('Oops! I\'m sorry. I can\'t let you proceed.')
+        query.edit_message_text(get_some_random_words('session_expired'))
+        query.edit_message_reply_markup(None)
+        return
     search_results = json.loads(raw_search_results)
     message, reply_markup = build_search_results(
         results_id,
@@ -39,8 +43,8 @@ def show_search_results(query, query_data, update: Update, context: CallbackCont
 def search_callback(query: CallbackQuery, query_data, update: Update, context: CallbackContext):
     if 'instance' in query_data and 'text' in query_data and 'data' in query_data:
         data = query_data['data']
-        data['instance'] = query_data['instance']
         data['text'] = query_data['text']
+        undo_callback_chat_all(update.effective_chat, chatbot().db)
     else:
         data = query_data
     actions[data['action']](query, data, update, context)
