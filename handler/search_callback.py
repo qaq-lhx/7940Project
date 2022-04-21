@@ -17,7 +17,7 @@ def show_movie_info(query, query_data):
             'search_keywords': keywords
         }, chatbot().db)),
         #click to evaluate a movie
-        InlineKeyboardButton('evaluate',callback_data=callback('evaluate',{'movie_id':movie_id}, chatbot().db)),
+        InlineKeyboardButton('evaluate',callback_data=callback('evaluate',{'movie_id':movie_id,'movie':movie[1]}, chatbot().db)),
         #click to view comment of a movie
         InlineKeyboardButton('comment',callback_data=callback('view',{'movie_id':movie_id}, chatbot().db))],
     ])
