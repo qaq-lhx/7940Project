@@ -23,8 +23,8 @@ def build_pagination_page_numbers(total: int, page: int, page_limit: int) -> \
         Tuple[Optional[int], List[Optional[int]], Optional[int]]:
     max_page = math.ceil(total / page_limit)
     pagination_page_numbers = [page]
-    prev_page = None,
-    next_page = None,
+    prev_page = None
+    next_page = None
     if page > 1:
         prev_page = page - 1
         pagination_page_numbers.insert(0, prev_page)
@@ -103,9 +103,7 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
         }, db)
     )] for result in results_to_show]
     if need_pagination:
-        print(pagination_buttons)
-        # buttons_to_show.append(pagination_buttons)
-        buttons_to_show.append([InlineKeyboardButton('test', callback_data='-1')])
+        buttons_to_show.append(pagination_buttons)
     if update_markup_only:
         message = None
     else:
