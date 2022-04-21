@@ -14,15 +14,13 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
     if command == 'normal_label':
         label = query_data['label']
         add_label_to_db(movie_id,label,chatbot().db)
-        print(query_data)
         added_label = query_data['added_label']
-        print('added_label')
-        print(added_label)
         added_label.extend([label])
         button = [[InlineKeyboardButton('add another label',callback_data=callback('label_callback',{
             'command':'add_more_label',
             'movie_id': movie_id,
             'added_label':added_label,
+            'label':label,
             'more_label':query_data['more_label']
         }, chatbot().db))],
             [InlineKeyboardButton('write comment',callback_data=callback('label_callback',{
@@ -44,6 +42,7 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
             'command':'normal_label',
             'movie_id': movie_id,
             'label':label,
+            'more_label':result,
             'added_label':query_data['added_label']
         }, chatbot().db))] for label in result]
         button.extend([[InlineKeyboardButton('custom label',callback_data=callback('label_callback',{
@@ -62,6 +61,7 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
                 'label':None
         }, chatbot().db))]])
         reply_markup = InlineKeyboardMarkup(button)
+        #query.edit_message_text('You can give labels for this movie')
         query.edit_message_reply_markup(reply_markup)
     if command == 'add_more_label':
         added_label = query_data['added_label']
@@ -72,6 +72,7 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
                 'command':'normal_label',
                 'movie_id': movie_id,
                 'label':label,
+                'more_label':query_data['more_label'],
                 'added_label':added_label
             }, chatbot().db))] for label in again_labels]
             if len(again_more_labels)!=0:
@@ -87,12 +88,13 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
                     'command':'normal_label',
                     'movie_id': movie_id,
                     'label':label,
+                    'more_label':query_data['more_label'],
                     'added_label':added_label
                 }, chatbot().db))] for label in again_more_labels]
         button.extend([[InlineKeyboardButton('custom label',callback_data=callback('label_callback',{
             'command':'custom_label',
             'movie_id': movie_id,
-            'label':None
+            'more_label':query_data['more_label']
         }, chatbot().db))]])
         button.extend([[InlineKeyboardButton('write comment',callback_data=callback('label_callback',{
             'command':'write_comment',
@@ -104,17 +106,18 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
             'movie_id': movie_id,
             'label':None
         }, chatbot().db))]])
+        label = query_data['label']
+        query.edit_message_text("You add a label 【 {} 】 to the movie".format(label))
         reply_markup = InlineKeyboardMarkup(button)
-        query.edit_message_text('Please choose a label for this movie:')
-        query.edit_message_reply_markup(reply_markup)
+        context.bot.send_message(query.message.chat_id,text='Please choose a label for this movie:',reply_markup=reply_markup)
     if command == 'custom_label':
-        update.message.reply_text('Please give your label to the movie')
+        query.edit_message_text('Please give your label to the movie')
         callback_chat(update.effective_chat, 'custom_label_callback',  movie_id, chatbot().db)
     if command == 'write_comment':
-        update.message.reply_text('Please type in your comment to the movie')
+        query.edit_message_text('Please type in your comment to the movie')
         callback_chat(update.effective_chat, 'write_comment_callback',  movie_id, chatbot().db)
     if command == 'cancel_and_exit':
-        query.edit_message_text('Thanks for your sharing!\nYou can use command \"/search <keyword>\" to find another movie.')
+        query.edit_message_text('Thanks for your sharing!\nYou can use command \"/search <keyword>\" or simply use command \"/search\" to find another movie.')
 
 
 
