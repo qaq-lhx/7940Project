@@ -42,6 +42,9 @@ Words = {
     'read_a_comment': [
         'The comment says:',
     ],
+    'need_genre': [
+        'Choose a movie genre that you are interested in:',
+    ],
     'start_tip': [
         'If you want to ask me how to start, just type /start.',
         'By the way, you can type /start to start.',

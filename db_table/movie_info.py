@@ -92,6 +92,18 @@ def search_movie_in_db(keywords: List[str], excluded_ids: List[int], limit: int,
     return results
 
 
+def get_genres_in_db(db) -> List[str]:
+    cursor = db.cursor()
+    cursor.execute("""select distinct genres
+        from MovieInfo
+        where genres != '(no genres listed)'
+        order by genres;""")
+    genres = list(set([genre for result in cursor.fetchall() for genre in result[0].split('|')]))
+    cursor.close()
+    genres.sort()
+    return genres
+
+
 def recommend_movie_in_db(keywords, db):
     like_keyword = ' '.join(keywords)
     limit = 5
