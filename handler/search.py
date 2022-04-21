@@ -127,9 +127,16 @@ def new_search(query, query_data, update: Update, context: CallbackContext):
     )
     if message is not None:
         if reply_markup is None:
-            update.message.reply_text(message)
+            if query is None:
+                update.message.reply_text(message)
+            else:
+                query.edit_message_text(message)
         else:
-            update.message.reply_text(message, reply_markup=reply_markup)
+            if query is None:
+                update.message.reply_text(message, reply_markup=reply_markup)
+            else:
+                query.edit_message_text(message)
+                query.edit_message_reply_markup(reply_markup)
 
 
 def search_command(update: Update, context: CallbackContext):
