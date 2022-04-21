@@ -3,6 +3,7 @@ import json
 from telegram import Update, CallbackQuery
 from telegram.ext import CallbackContext
 
+from callback_utils import undo_callback_chat_all
 from db_table.callback_data import fetch
 from handler import GetChatbot
 from handler.search import build_search_results, new_search
@@ -39,8 +40,8 @@ def show_search_results(query, query_data, update: Update, context: CallbackCont
 def search_callback(query: CallbackQuery, query_data, update: Update, context: CallbackContext):
     if 'instance' in query_data and 'text' in query_data and 'data' in query_data:
         data = query_data['data']
-        data['instance'] = query_data['instance']
         data['text'] = query_data['text']
+        undo_callback_chat_all(update.effective_chat, chatbot().db)
     else:
         data = query_data
     actions[data['action']](query, data, update, context)
