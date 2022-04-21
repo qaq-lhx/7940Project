@@ -16,3 +16,7 @@ class Env:
             self.search_limit = os.environ['SEARCH_LIMIT']
         else:
             self.search_limit = 100
+        if 'PAGE_LIMIT' in os.environ:
+            self.page_limit = os.environ['PAGE_LIMIT']
+        else:
+            self.page_limit = 10
