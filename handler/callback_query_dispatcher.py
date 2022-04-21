@@ -13,7 +13,10 @@ def dispatch(update: Update, context: CallbackContext):
     query.answer()
     if query.data == '':
         return
-    raw_data = fetch(int(query.data), chatbot().db)
+    callback_data_id = int(query.data)
+    if callback_data_id < 0:
+        return
+    raw_data = fetch(callback_data_id, chatbot().db)
     if raw_data is not None:
         query_data = json.loads(fetch(int(query.data), chatbot().db))
         return Callbacks[query_data['call']][1](query, query_data['data'], update, context)
