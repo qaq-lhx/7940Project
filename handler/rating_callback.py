@@ -18,6 +18,7 @@ def rating_callback(query: CallbackQuery, query_data, update: Update, context: C
     score = query_data['score']
     rating.insert_rating_in_db(movie_id,score,chatbot().db)
     result = get_labels_from_db(movie_id,chatbot().db)
+    result = [item[0] for item in result]
     button = [[InlineKeyboardButton(label, callback_data=callback('label_callback', {
             'command':'normal_label',
             'movie_id': movie_id,
