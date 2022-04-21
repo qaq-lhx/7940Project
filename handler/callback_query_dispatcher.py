@@ -11,6 +11,8 @@ from handler import GetChatbot
 def dispatch(update: Update, context: CallbackContext):
     query = update.callback_query
     query.answer()
+    if query.data == '':
+        return
     raw_data = fetch(int(query.data), chatbot().db)
     if raw_data is not None:
         query_data = json.loads(fetch(int(query.data), chatbot().db))
