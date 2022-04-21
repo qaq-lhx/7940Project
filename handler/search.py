@@ -16,6 +16,8 @@ from words import get_some_random_words
 def search_with_ratings(keywords: List[str], excluded_ids: List[int], limit: int, db) -> \
         List[Tuple[int, str, str, float]]:
     results = search_movie_in_db(keywords, excluded_ids, limit, db)
+    if len(results) < 1:
+        return []
     ratings = get_movie_average_ratings([result[0] for result in results], db)
     return [result + (ratings[result[0]],) for result in results]
 
@@ -91,11 +93,27 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
     return message, InlineKeyboardMarkup(buttons_to_show)
 
 
+def prepare_data_for_new_search():
+    return {
+        'action': 'new_search',
+        'search_limit': chatbot().env.search_limit,
+        'page': 1,
+        'page_limit': chatbot().env.page_limit
+    }
+
+
 def new_search(query, query_data, update: Update, context: CallbackContext):
     if 'text' in query_data:
         keywords = query_data['text'].split(' ')
-    else:
+    elif 'search_keywords' in query_data:
         keywords = query_data['search_keywords']
+    else:
+        if query is None:
+            update.message.reply_text(get_some_random_words('need_search_keyword'))
+        else:
+            query.edit_message_text(get_some_random_words('need_search_keyword'))
+        callback_chat(update.effective_chat, 'search_callback', query_data, chatbot().db)
+        return
     limit = query_data['search_limit']
     page = query_data['page']
     page_limit = query_data['page_limit']
@@ -115,12 +133,7 @@ def new_search(query, query_data, update: Update, context: CallbackContext):
 
 
 def search_command(update: Update, context: CallbackContext):
-    query_data = {
-        'action': 'new_search',
-        'search_limit': chatbot().env.search_limit,
-        'page': 1,
-        'page_limit': chatbot().env.page_limit
-    }
+    query_data = prepare_data_for_new_search()
     if len(context.args) < 1:
         update.message.reply_text(get_some_random_words('need_search_keyword'))
         callback_chat(update.effective_chat, 'search_callback', query_data, chatbot().db)
