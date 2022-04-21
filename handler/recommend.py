@@ -3,7 +3,6 @@ from telegram.ext import CommandHandler, CallbackContext
 
 from callback_utils import callback
 from db_table.movie_info import recommend_movie_in_db
-
 from handler import GetChatbot
 
 def build_recommend_results(keywords, results, db):
