@@ -27,6 +27,21 @@ Words = {
     'found_some_movies': [
         'Here are the movies I found:',
     ],
+    'no_movie_details': [
+        'Oops! I\'m sorry. I can\'t tell you more about the movie.',
+    ],
+    'no_comment': [
+        'No comment. I don\'t know anything.',
+    ],
+    'got_a_comment': [
+        'Here is the comment:',
+    ],
+    'got_some_comments': [
+        'Here are the comments:',
+    ],
+    'read_a_comment': [
+        'The comment says:',
+    ],
     'default': [
         'Oops! I don\'t know what to say.',
         'I don\'t know what to say, and I cannot think.',

@@ -1,5 +1,4 @@
 import json
-import math
 from typing import List, Tuple, Optional
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -10,6 +9,7 @@ from db_table.callback_data import store
 from db_table.movie_info import search_movie_in_db
 from db_table.rating import get_movie_average_ratings
 from handler import GetChatbot
+from pagination import build_pagination_page_numbers, build_pagination_button
 from words import get_some_random_words
 
 
@@ -18,46 +18,6 @@ def search_with_ratings(keywords: List[str], excluded_ids: List[int], limit: int
     results = search_movie_in_db(keywords, excluded_ids, limit, db)
     ratings = get_movie_average_ratings([result[0] for result in results], db)
     return [result + (ratings[result[0]],) for result in results]
-
-
-def build_pagination_page_numbers(total: int, page: int, page_limit: int) -> \
-        Tuple[Optional[int], List[Optional[int]], Optional[int]]:
-    max_page = math.ceil(total / page_limit)
-    pagination_page_numbers = [page]
-    prev_page = None
-    next_page = None
-    if page > 1:
-        prev_page = page - 1
-        pagination_page_numbers.insert(0, prev_page)
-    if page < max_page:
-        next_page = page + 1
-        pagination_page_numbers.append(next_page)
-    if page == 1 and 3 <= max_page:
-        pagination_page_numbers.append(3)
-    if page == max_page and max_page - 2 >= 1:
-        pagination_page_numbers.insert(0, max_page - 2)
-    if pagination_page_numbers[0] > 1:
-        if pagination_page_numbers[0] > 2:
-            pagination_page_numbers.insert(0, None)
-        pagination_page_numbers.insert(0, 1)
-    if pagination_page_numbers[-1] < max_page:
-        if pagination_page_numbers[-1] < max_page - 1:
-            pagination_page_numbers.append(None)
-        pagination_page_numbers.append(max_page)
-    return prev_page, pagination_page_numbers, next_page
-
-
-def build_pagination_button(results_id: int, current_page: int, page: Optional[int], page_limit: int, db):
-    if page is None:
-        return InlineKeyboardButton('\u2026', callback_data='-1')
-    if page == current_page:
-        return InlineKeyboardButton('<{}>'.format(page), callback_data='-1')
-    return InlineKeyboardButton(str(page), callback_data=callback('search_callback', {
-        'action': 'show_search_results',
-        'search_results_id': results_id,
-        'page': page,
-        'page_limit': page_limit
-    }, db))
 
 
 def build_search_results(results_id: Optional[int], results: List[Tuple[int, str, str, float]], page: int,
@@ -75,8 +35,12 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
     if need_pagination:
         prev_page, pagination_page_numbers, next_page = build_pagination_page_numbers(total, page, page_limit)
         results_to_show = results[(page - 1) * page_limit:page * page_limit]
-        pagination_buttons = [[build_pagination_button(results_id, page, page_number, page_limit, db) for page_number in
-                               pagination_page_numbers]]
+        pagination_buttons = [[build_pagination_button(callback('search_callback', {
+            'action': 'show_search_results',
+            'search_results_id': results_id,
+            'page': page_number,
+            'page_limit': page_limit
+        }, db), page, page_number) for page_number in pagination_page_numbers]]
         prev_next_buttons = []
         if prev_page is not None:
             prev_next_buttons.append(InlineKeyboardButton('\u1438', callback_data=callback('search_callback', {
@@ -120,7 +84,7 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
     if update_markup_only:
         message = None
     else:
-        if len(results) > 1:
+        if total > 1:
             message = get_some_random_words('found_some_movies')
         else:
             message = get_some_random_words('found_a_movie')

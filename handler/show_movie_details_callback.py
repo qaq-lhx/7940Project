@@ -2,10 +2,12 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Callbac
 from telegram.ext import CallbackContext
 
 from callback_utils import callback
+from db_table.feedback import get_comments_count
 from db_table.label import get_labels_from_db
 from db_table.movie_info import get_movie_in_db
 from db_table.rating import get_movie_average_ratings
 from handler import GetChatbot
+from words import get_some_random_words
 
 
 def show_movie_details_callback(query: CallbackQuery, query_data, update: Update, context: CallbackContext):
@@ -21,6 +23,7 @@ def show_movie_details_callback(query: CallbackQuery, query_data, update: Update
     movie = get_movie_in_db(movie_id, chatbot().db)
     ratings_dict = get_movie_average_ratings([movie_id], chatbot().db)
     tags = ['#' + tag[0].lower() for tag in get_labels_from_db(movie_id, chatbot().db)]
+    comments_count = get_comments_count(movie_id, chatbot().db)
     if movie_id in ratings_dict:
         rating = ratings_dict[movie_id]
     else:
@@ -28,25 +31,40 @@ def show_movie_details_callback(query: CallbackQuery, query_data, update: Update
     if back_to is None:
         back_to_button = []
     else:
-        back_to_button = [InlineKeyboardButton('\u1438', callback_data=callback(back_to, back_with_data, chatbot().db))]
+        back_to_button = [
+            InlineKeyboardButton('\u25c0 Go Back', callback_data=callback(back_to, back_with_data, chatbot().db))
+        ]
+    if comments_count > 0:
+        if comments_count > 1:
+            show_comments_button_text = 'See {} Comments'.format(comments_count)
+        else:
+            show_comments_button_text = 'See 1 Comment'
+        show_comments_button = [InlineKeyboardButton(show_comments_button_text, callback_data=callback(
+            'show_comments_callback',
+            {
+                'movie_id': movie_id,
+                'page': 1,
+                'page_limit': chatbot().env.page_limit,
+                'update_text': True,
+                'back_to': 'show_movie_details_callback',
+                'back_with_data': query_data,
+            },
+            chatbot().db
+        ))]
+    else:
+        show_comments_button = []
     reply_markup = InlineKeyboardMarkup([
         back_to_button + [
             # Click to evaluate the movie
-            InlineKeyboardButton('evaluate', callback_data=callback(
+            InlineKeyboardButton('Rate This Movie', callback_data=callback(
                 'evaluate',
                 {'movie_id': movie_id, 'movie': movie[1]},
                 chatbot().db
             )),
-            # Click to view comments of the movie
-            InlineKeyboardButton('comment', callback_data=callback(
-                'view',
-                {'movie_id': movie_id},
-                chatbot().db
-            ))
-        ],
+        ] + show_comments_button,
     ])
     if movie is None:
-        message = 'Oops! I\'m sorry. I can\'t tell you more about the movie.'
+        message = get_some_random_words('no_movie_details')
     else:
         genres = movie[4].split('|')
         if len(genres) > 1:
