@@ -27,9 +27,8 @@ def handle_text_message(update: Update, context: CallbackContext):
                 'text': update.message.text,
                 'data': query_data['data']
             }
-            Callbacks[query_data['call']][1](update.callback_query, data, update, context)
-            return
-    echo(update, context)
+            return Callbacks[query_data['call']][1](update.callback_query, data, update, context)
+    return echo(update, context)
 
 
 chatbot = GetChatbot()
