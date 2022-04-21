@@ -1,53 +1,11 @@
 import json
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from telegram import Update, CallbackQuery
 from telegram.ext import CallbackContext
 
-from callback_utils import callback
 from db_table.callback_data import fetch
-from db_table.movie_info import get_movie_in_db
 from handler import GetChatbot
 from handler.search import build_search_results, new_search
-
-
-def show_movie_info(query, query_data, update: Update, context: CallbackContext):
-    movie_id = query_data['selected_id']
-    results_id = query_data['search_results_id']
-    page = query_data['page']
-    page_limit = query_data['page_limit']
-    movie = get_movie_in_db(movie_id, chatbot().db)
-    reply_markup = InlineKeyboardMarkup([
-        [InlineKeyboardButton('\u1438', callback_data=callback('search_callback', {
-            'action': 'show_search_results',
-            'search_results_id': results_id,
-            'page': page,
-            'page_limit': page_limit,
-            'update_text': True
-        }, chatbot().db)),
-         # click to evaluate a movie
-         InlineKeyboardButton('evaluate', callback_data=callback(
-             'evaluate',
-             {'movie_id': movie_id, 'movie': movie[1]},
-             chatbot().db
-         )),
-         # click to view comment of a movie
-         InlineKeyboardButton('comment', callback_data=callback(
-             'view',
-             {'movie_id': movie_id},
-             chatbot().db
-         ))],
-    ])
-    if movie is None:
-        message = 'Oops! I\'m sorry. I can\'t tell you more about the movie.'
-    else:
-        message = '{} ({})\n\nGenres: {}\n\nOverview: {}'.format(
-            movie[1],
-            movie[5],
-            ', '.join(movie[4].split('|')),
-            movie[6]
-        )
-    query.edit_message_text(message)
-    query.edit_message_reply_markup(reply_markup)
 
 
 def show_search_results(query, query_data, update: Update, context: CallbackContext):
@@ -90,7 +48,6 @@ def search_callback(query: CallbackQuery, query_data, update: Update, context: C
 
 actions = {
     'new_search': new_search,
-    'show_movie_info': show_movie_info,
     'show_search_results': show_search_results
 }
 chatbot = GetChatbot()

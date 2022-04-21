@@ -94,12 +94,16 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
         results_to_show = results
     buttons_to_show = [[InlineKeyboardButton(
         '{} ({}), \u2606:{:0.1f}'.format(result[1], result[2], result[3]),
-        callback_data=callback('search_callback', {
-            'action': 'show_movie_info',
-            'selected_id': result[0],
-            'search_results_id': results_id,
-            'page': page,
-            'page_limit': page_limit
+        callback_data=callback('show_movie_details_callback', {
+            'movie_id': result[0],
+            'back_to': 'search_callback',
+            'back_with_data': {
+                'action': 'show_search_results',
+                'search_results_id': results_id,
+                'page': page,
+                'page_limit': page_limit,
+                'update_text': True
+            },
         }, db)
     )] for result in results_to_show]
     if need_pagination:
