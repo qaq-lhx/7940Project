@@ -10,7 +10,7 @@ from handler import GetChatbot
 
 
 def starting(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Start to find a movie you like!\nYou can follow our guide to Find/Rate the movie\nSeacrhing movie:/seacrh <keyword>\nRecommend movie:/recommend <keyword>')
+    update.message.reply_text('Start to find a movie you like!\nYou can follow our guide to Find/Rate the movie\nSeacrhing movie:/seacrh <keyword>\nRecommend movie:/recommend <genres>')
 
 chatbot = GetChatbot()
 Handler = chatbot, CommandHandler('start', starting)
