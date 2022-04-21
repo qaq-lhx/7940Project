@@ -2,6 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Callbac
 from telegram.ext import CallbackContext
 
 from callback_utils import callback
+from db_table.label import get_labels_from_db
 from db_table.movie_info import get_movie_in_db
 from db_table.rating import get_movie_average_ratings
 from handler import GetChatbot
@@ -19,6 +20,7 @@ def show_movie_details_callback(query: CallbackQuery, query_data, update: Update
         back_with_data = None
     movie = get_movie_in_db(movie_id, chatbot().db)
     ratings_dict = get_movie_average_ratings([movie_id], chatbot().db)
+    tags = ['#' + tag[0].lower() for tag in get_labels_from_db(movie_id, chatbot().db)]
     if movie_id in ratings_dict:
         rating = ratings_dict[movie_id]
     else:
@@ -46,21 +48,55 @@ def show_movie_details_callback(query: CallbackQuery, query_data, update: Update
     if movie is None:
         message = 'Oops! I\'m sorry. I can\'t tell you more about the movie.'
     else:
-        if rating is None:
-            message = '{} ({})\n\nGenres: {}\n\nOverview: {}'.format(
-                movie[1],
-                movie[5],
-                ', '.join(movie[4].split('|')),
-                movie[6]
-            )
+        genres = movie[4].split('|')
+        if len(genres) > 1:
+            genres_display_name = 'Genres'
         else:
-            message = '{} ({})\n\nRating: {:0.1f}\n\nGenres: {}\n\nOverview: {}'.format(
-                movie[1],
-                movie[5],
-                rating,
-                ', '.join(movie[4].split('|')),
-                movie[6]
-            )
+            genres_display_name = 'Genre'
+        if len(tags) > 1:
+            tags_display_name = 'Tags'
+        else:
+            tags_display_name = 'Tag'
+        if rating is None:
+            if len(tags) > 0:
+                message = '{} ({})\n\n{}: {}\n\nOverview: {}\n\n{}: {}'.format(
+                    movie[1],
+                    movie[5],
+                    genres_display_name,
+                    ', '.join(genres),
+                    movie[6],
+                    tags_display_name,
+                    ' '.join(tags)
+                )
+            else:
+                message = '{} ({})\n\n{}: {}\n\nOverview: {}'.format(
+                    movie[1],
+                    movie[5],
+                    genres_display_name,
+                    ', '.join(genres),
+                    movie[6],
+                )
+        else:
+            if len(tags) > 0:
+                message = '{} ({})\n\nRating: {:0.1f}\n\n{}: {}\n\nOverview: {}\n\n{}: {}'.format(
+                    movie[1],
+                    movie[5],
+                    rating,
+                    genres_display_name,
+                    ', '.join(genres),
+                    movie[6],
+                    tags_display_name,
+                    ' '.join(tags)
+                )
+            else:
+                message = '{} ({})\n\nRating: {:0.1f}\n\n{}: {}\n\nOverview: {}'.format(
+                    movie[1],
+                    movie[5],
+                    rating,
+                    genres_display_name,
+                    ', '.join(genres),
+                    movie[6],
+                )
     query.edit_message_text(message)
     query.edit_message_reply_markup(reply_markup)
 
