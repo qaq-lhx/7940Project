@@ -1,5 +1,5 @@
 from handler import text_message_dispatcher, callback_query_dispatcher, start, help, add_label, search, button, \
-    recommend
+    recommend, default
 
 Handlers = [
     text_message_dispatcher.Handler,
@@ -10,4 +10,5 @@ Handlers = [
     search.Handler,
     button.Handler,
     recommend.Handler,
+    default.Handler,
 ]
