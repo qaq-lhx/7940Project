@@ -3,13 +3,12 @@ from telegram.ext import CommandHandler, CallbackContext
 
 from callback_utils import callback
 from db_table.movie_info import recommend_movie_in_db
-
 from handler import GetChatbot
 
 def build_recommend_results(keywords, results, db):
     reply_markup = InlineKeyboardMarkup(
         [[InlineKeyboardButton(
-            '{} ({})'.format(result[1], result[2]),
+            '{} ({}), \u2606:{}'.format(result[1], result[2], result[3]),
             callback_data=callback('recommend_callback', {
                 'action': 'show_movie_info',
                 'selected_id': result[0],
