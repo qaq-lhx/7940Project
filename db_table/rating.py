@@ -9,7 +9,7 @@ def get_movie_average_ratings(movie_ids: List[int], db) -> Dict[int, float]:
         group by movieID;""".format(', '.join(['%s'] * len(movie_ids))), tuple(movie_ids))
     results = cursor.fetchall()
     cursor.close()
-    return {movie_id: average_rating for movie_id, average_rating in results}
+    return {movie_id: float(average_rating) for movie_id, average_rating in results}
 
 
 def insert_rating_in_db(movie_id, score, db):
