@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Dict
 
 
-def get_movie_average_ratings(movie_ids: List[int], db):
+def get_movie_average_ratings(movie_ids: List[int], db) -> Dict[int, float]:
     cursor = db.cursor()
     cursor.execute("""select movieID, avg(rating)
         from Rating
