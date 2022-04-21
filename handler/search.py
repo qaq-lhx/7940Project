@@ -74,22 +74,30 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
     if need_pagination:
         prev_page, pagination_page_numbers, next_page = build_pagination_page_numbers(total, page, page_limit)
         results_to_show = results[(page - 1) * page_limit:page * page_limit]
-        pagination_buttons = [build_pagination_button(results_id, page, page_number, page_limit, db) for page_number in
-                              pagination_page_numbers]
+        pagination_buttons = [[build_pagination_button(results_id, page, page_number, page_limit, db) for page_number in
+                               pagination_page_numbers]]
+        prev_next_buttons = []
         if prev_page is not None:
-            pagination_buttons.insert(0, InlineKeyboardButton('\u1438', callback_data=callback('search_callback', {
+            prev_next_buttons.append(InlineKeyboardButton('\u1438', callback_data=callback('search_callback', {
                 'action': 'show_search_results',
                 'search_results_id': results_id,
                 'page': prev_page,
                 'page_limit': page_limit
             }, db)))
         if next_page is not None:
-            pagination_buttons.append(InlineKeyboardButton('\u1433', callback_data=callback('search_callback', {
+            prev_next_buttons.append(InlineKeyboardButton('\u1433', callback_data=callback('search_callback', {
                 'action': 'show_search_results',
                 'search_results_id': results_id,
                 'page': next_page,
                 'page_limit': page_limit
             }, db)))
+        if len(prev_next_buttons) > 1:
+            pagination_buttons.append(prev_next_buttons)
+        elif len(prev_next_buttons) == 1:
+            if prev_page is not None:
+                pagination_buttons[0].insert(0, prev_next_buttons[0])
+            elif next_page is not None:
+                pagination_buttons[0].append(prev_next_buttons[0])
     else:
         results_to_show = results
     buttons_to_show = [[InlineKeyboardButton(
@@ -107,7 +115,7 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
         }, db)
     )] for result in results_to_show]
     if need_pagination:
-        buttons_to_show.append(pagination_buttons)
+        buttons_to_show += pagination_buttons
     if update_markup_only:
         message = None
     else:
