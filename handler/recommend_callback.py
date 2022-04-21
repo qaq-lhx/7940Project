@@ -27,7 +27,7 @@ def show_movie_info(query, query_data):
     if movie is None:
         message = 'Oops! I\'m sorry. I can\'t tell you more about the movie.'
     else:
-        message = '{} ({})\n\nGenres: {}\n\n Rating: {}\n\nOverview: {}'.format(
+        message = '{} ({})\n\nGenres: {}\n\nRating: {}\n\nOverview: {}'.format(
             movie[1],
             movie[5],
             ', '.join(movie[4].split('|')),
