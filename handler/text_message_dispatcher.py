@@ -1,5 +1,4 @@
 import json
-import logging
 
 from telegram import Update
 from telegram.ext import MessageHandler, Filters, CallbackContext
@@ -7,13 +6,11 @@ from telegram.ext import MessageHandler, Filters, CallbackContext
 from callbacks import Callbacks
 from db_table.callback_data import fetch_chat
 from handler import GetChatbot
+from words import get_some_random_words
 
 
-def echo(update: Update, context: CallbackContext):
-    reply_message = update.message.text.upper()
-    logging.info('Update: ' + str(update))
-    logging.info('context: ' + str(context))
-    context.bot.send_message(chat_id=update.effective_chat.id, text=reply_message)
+def default_reply(update: Update, context: CallbackContext):
+    update.message.reply_text(get_some_random_words('default') + '\n\n' + get_some_random_words('start_tip'))
 
 
 def handle_text_message(update: Update, context: CallbackContext):
@@ -27,8 +24,8 @@ def handle_text_message(update: Update, context: CallbackContext):
                 'text': update.message.text,
                 'data': query_data['data']
             }
-            return Callbacks[query_data['call']][1](update.callback_query, data, update, context)
-    return echo(update, context)
+            Callbacks[query_data['call']][1](update.callback_query, data, update, context)
+    default_reply(update, context)
 
 
 chatbot = GetChatbot()

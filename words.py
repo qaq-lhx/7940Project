@@ -42,6 +42,10 @@ Words = {
     'read_a_comment': [
         'The comment says:',
     ],
+    'start_tip': [
+        'If you want to ask me how to start, just type /start.',
+        'By the way, you can type /start to start.',
+    ],
     'default': [
         'Oops! I don\'t know what to say.',
         'I don\'t know what to say, and I cannot think.',
