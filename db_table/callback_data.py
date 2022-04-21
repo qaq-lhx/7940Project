@@ -1,9 +1,6 @@
 from typing import Optional, Tuple
 
-
-def fetch_all_from_stored_procedure_selects(cursor):
-    results = [stored_result.fetchall() for stored_result in cursor.stored_results()]
-    return [result for sublist in results for result in sublist]
+from db_table import fetch_all_from_stored_procedure_selects
 
 
 def store(callback_data: str, db) -> Optional[int]:
