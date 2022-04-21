@@ -13,5 +13,6 @@ def add_label_to_db(movie_id,label,db):
     if len(result)==0:    
         cursorObject.execute( """INSERT INTO Label (movieID,label,frequency) VALUES ( %s , %s , %s )""",(movie_id,label,1))
     else:
-        cursorObject.execute( """UPDATE Label SET frequency=%s WHERE movieID=%s and label=%s""",(movie_id,label,int(result[0])+1))
+        frequency = int(result[0][0])+1
+        cursorObject.execute( """UPDATE Label SET frequency=%s WHERE movieID=%s and label=%s""",(frequency,movie_id,label))
     db.commit()

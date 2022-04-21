@@ -1,12 +1,10 @@
-from cProfile import label
 from telegram import CallbackQuery, InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import  CallbackContext
-from callback_utils import callback
+from callback_utils import callback, callback_chat
 import chatbot
 from db_table.label import add_label_to_db
 
 from handler import GetChatbot
-from db_table import rating
 
 def label_callback(query: CallbackQuery, query_data, update: Update, context: CallbackContext) -> None:
     """handle user feedback to a movie"""
@@ -16,7 +14,10 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
     if command == 'normal_label':
         label = query_data['label']
         add_label_to_db(movie_id,label,chatbot().db)
-        added_label=query_data['added_label']
+        print(query_data)
+        added_label = query_data['added_label']
+        print('added_label')
+        print(added_label)
         added_label.extend([label])
         button = [[InlineKeyboardButton('add another label',callback_data=callback('label_callback',{
             'command':'add_more_label',
@@ -71,7 +72,7 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
                 'command':'normal_label',
                 'movie_id': movie_id,
                 'label':label,
-                'add_label':added_label
+                'added_label':added_label
             }, chatbot().db))] for label in again_labels]
             if len(again_more_labels)!=0:
                 button.extend([[InlineKeyboardButton('more labels',callback_data=callback('label_callback',{
@@ -86,7 +87,7 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
                     'command':'normal_label',
                     'movie_id': movie_id,
                     'label':label,
-                    'add_label':added_label
+                    'added_label':added_label
                 }, chatbot().db))] for label in again_more_labels]
         button.extend([[InlineKeyboardButton('custom label',callback_data=callback('label_callback',{
             'command':'custom_label',
@@ -107,9 +108,11 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
         query.edit_message_text('Please choose a label for this movie:')
         query.edit_message_reply_markup(reply_markup)
     if command == 'custom_label':
-        a
+        update.message.reply_text('Please give your label to the movie')
+        callback_chat(update.effective_chat, 'custom_label_callback',  movie_id, chatbot().db)
     if command == 'write_comment':
-        a
+        update.message.reply_text('Please type in your comment to the movie')
+        callback_chat(update.effective_chat, 'write_comment_callback',  movie_id, chatbot().db)
     if command == 'cancel_and_exit':
         query.edit_message_text('Thanks for your sharing!\nYou can use command \"/search <keyword>\" to find another movie.')
 
