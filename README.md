@@ -1,5 +1,7 @@
 # 7940Project
 
+chatbot: @CattyKevinbot
+
 group:26
 
 git project:qaq-lhx/7940Project
