@@ -1,7 +1,7 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 
-def get_movie_in_db(movie_id: int, db):
+def get_movie_in_db(movie_id: int, db) -> Optional[Tuple[int, str, str, str, str, int, str]]:
     cursor = db.cursor()
     cursor.execute("""select id, name, imdbID, poster, genres, year, overview
         from MovieInfo
@@ -16,7 +16,7 @@ def get_movie_in_db(movie_id: int, db):
 
 
 def search_movie_in_db_by_exact_match(exact_match_keyword: str, excluded_ids: List[int], limit: int, db,
-                                      prefix_matching: bool = False):
+                                      prefix_matching: bool = False) -> List[Tuple[int, str, str]]:
     cursor = db.cursor()
     if prefix_matching:
         keyword = exact_match_keyword + '%'
@@ -39,7 +39,7 @@ def search_movie_in_db_by_exact_match(exact_match_keyword: str, excluded_ids: Li
 
 
 def search_movie_in_db_by_fulltext_match(keywords: List[str], excluded_ids: List[int], limit: int, db,
-                                         exact_match_keyword: Optional[str] = None):
+                                         exact_match_keyword: Optional[str] = None) -> List[Tuple[int, str, str]]:
     cursor = db.cursor()
     partial_match_keyword = ' '.join([keyword + '*' for keyword in keywords])
     if exact_match_keyword is None:
@@ -63,7 +63,7 @@ def search_movie_in_db_by_fulltext_match(keywords: List[str], excluded_ids: List
     return results
 
 
-def search_movie_in_db(keywords: List[str], excluded_ids: List[int], limit: int, db):
+def search_movie_in_db(keywords: List[str], excluded_ids: List[int], limit: int, db) -> List[Tuple[int, str, str]]:
     exact_match_keyword = ' '.join(keywords)
     results = search_movie_in_db_by_exact_match(
         exact_match_keyword,
