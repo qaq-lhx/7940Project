@@ -1,19 +1,16 @@
-# 7940Project
+# COMP7940 Cloud Computing: Final Group Project
 
-chatbot: @CattyKevinbot
+## A Telegram Chatbot for Cinephiles
 
-group:26
+Chatbot: [@CattyKevinbot](https://t.me/CattyKevinbot)
 
-git project:qaq-lhx/7940Project
+GitHub Project: [qaq-lhx/7940Project](https://github.com/qaq-lhx/7940Project)
 
-group member:
+Hosted on [Google Cloud](https://cloud.google.com).
 
-LI, Hongxun(21445451),[qaq-lhx]
+Group No. 26
 
-ZHOU, Chenhao(21452881),[zhouchenh]
-
-SZE, Yuen Ying(21470138),[Sze Yuen Ying]
-
-
-
-
+Members:
+* LI, Hongxun (21445451), [qaq-lhx](https://github.com/qaq-lhx)
+* ZHOU, Chenhao (21452881), [zhouchenh](https://github.com/zhouchenh)
+* SZE, Yuen Ying (21470138), [Sze Yuen Ying](https://github.com/21470138)
