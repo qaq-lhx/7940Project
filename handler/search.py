@@ -10,6 +10,7 @@ from db_table.callback_data import store
 from db_table.movie_info import search_movie_in_db
 from db_table.rating import get_movie_average_ratings
 from handler import GetChatbot
+from words import get_some_random_words
 
 
 def search_with_ratings(keywords: List[str], excluded_ids: List[int], limit: int, db) -> \
@@ -65,7 +66,7 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
         if update_markup_only:
             return None, None
         else:
-            return 'I can\'t find any movie for you.', None
+            return get_some_random_words('found_no_movie'), None
     if results_id is None:
         results_id = store(json.dumps(results), db)
     total = len(results)
@@ -120,9 +121,9 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
         message = None
     else:
         if len(results) > 1:
-            message = 'Here are the movies I found:'
+            message = get_some_random_words('found_some_movies')
         else:
-            message = 'Here is the movie I found:'
+            message = get_some_random_words('found_a_movie')
     return message, InlineKeyboardMarkup(buttons_to_show)
 
 
@@ -157,7 +158,7 @@ def search_command(update: Update, context: CallbackContext):
         'page_limit': chatbot().env.page_limit
     }
     if len(context.args) < 1:
-        update.message.reply_text('What do you want to search for?')
+        update.message.reply_text(get_some_random_words('need_search_keyword'))
         callback_chat(update.effective_chat, 'search_callback', query_data, chatbot().db)
     else:
         query_data['search_keywords'] = context.args
