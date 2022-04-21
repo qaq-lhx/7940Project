@@ -32,6 +32,8 @@ jobs:
             DB_HOST=34.96.231.6
             DB_PORT=3306
             DB_NAME=chatbot
+            SEARCH_LIMIT=100
+            PAGE_LIMIT=10
           secrets: |
             TELEGRAM_ACCESS_TOKEN=TELEGRAM_ACCESS_TOKEN:latest
             TELEGRAM_WEBHOOK_SECRET_PATH=TELEGRAM_WEBHOOK_SECRET_PATH:latest
