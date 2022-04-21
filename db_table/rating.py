@@ -13,6 +13,7 @@ def get_movie_average_ratings(movie_ids: List[int], db) -> Dict[int, float]:
 
 
 def insert_rating_in_db(movie_id, score, db):
-    cursorObject = db.cursor()
-    cursorObject.execute("""INSERT INTO Rating (movieID,rating) VALUES ( %s , %s )""", (movie_id, score))
+    cursor = db.cursor()
+    cursor.execute("""insert into Rating (movieID, rating) values (%s, %s);""", (movie_id, score))
+    cursor.close()
     db.commit()
