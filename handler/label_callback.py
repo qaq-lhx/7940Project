@@ -28,7 +28,7 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
             'movie_id': movie_id
         }, chatbot().db))],
             [InlineKeyboardButton('cancel and exit',callback_data=callback('label_callback',{
-            'command':'cancel_and_end',
+            'command':'cancel_and_exit',
             'movie_id': movie_id
         }, chatbot().db))]]
         reply_markup = InlineKeyboardMarkup(button)
@@ -48,17 +48,14 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
         button.extend([[InlineKeyboardButton('custom label',callback_data=callback('label_callback',{
             'command':'custom_label',
                 'movie_id': movie_id,
-                'label':None
         }, chatbot().db))]])
         button.extend([[InlineKeyboardButton('write comment',callback_data=callback('label_callback',{
             'command':'write_comment',
                 'movie_id': movie_id,
-                'label':None
         }, chatbot().db))]])
         button.extend([[InlineKeyboardButton('cancel and exit',callback_data=callback('label_callback',{
             'command':'cancel_and_exit',
                 'movie_id': movie_id,
-                'label':None
         }, chatbot().db))]])
         reply_markup = InlineKeyboardMarkup(button)
         #query.edit_message_text('You can give labels for this movie')
