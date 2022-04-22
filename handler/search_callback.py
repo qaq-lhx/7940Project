@@ -11,6 +11,14 @@ from words import get_some_random_words
 
 
 def show_search_results(query, query_data, update: Update, context: CallbackContext):
+    if 'back_to' in query_data:
+        back_to = query_data['back_to']
+    else:
+        back_to = None
+    if 'back_with_data' in query_data:
+        back_with_data = query_data['back_with_data']
+    else:
+        back_with_data = None
     results_id = query_data['search_results_id']
     page = query_data['page']
     page_limit = query_data['page_limit']
@@ -27,6 +35,8 @@ def show_search_results(query, query_data, update: Update, context: CallbackCont
         page,
         page_limit,
         update_markup_only,
+        back_to,
+        back_with_data,
         chatbot().db
     )
     if message is None:
