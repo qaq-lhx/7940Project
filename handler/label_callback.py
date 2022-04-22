@@ -163,7 +163,10 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
                                  reply_markup=reply_markup)
     if command == 'custom_label':
         query.edit_message_text('Please give your label to the movie')
-        callback_chat(update.effective_chat, 'custom_label_callback', movie_id, chatbot().db)
+        callback_chat(update.effective_chat, 'custom_label_callback', {
+            'movie_id': movie_id,
+            **back_object
+        }, chatbot().db)
         if back_to is not None:
             query.edit_message_reply_markup(InlineKeyboardMarkup([[
                 InlineKeyboardButton('\u25c0 Go Back', callback_data=callback(
@@ -178,7 +181,10 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
             ]]))
     if command == 'write_comment':
         query.edit_message_text('Please type in your comment to the movie')
-        callback_chat(update.effective_chat, 'write_comment_callback', movie_id, chatbot().db)
+        callback_chat(update.effective_chat, 'write_comment_callback', {
+            'movie_id': movie_id,
+            **back_object
+        }, chatbot().db)
         if back_to is not None:
             query.edit_message_reply_markup(InlineKeyboardMarkup([[
                 InlineKeyboardButton('\u25c0 Go Back', callback_data=callback(

@@ -9,7 +9,8 @@ from handler import GetChatbot
 
 def custom_label_callback(query: CallbackQuery, query_data, update: Update, context: CallbackContext):
     custom_label = query_data['text']
-    movie_id = query_data['data']
+    query_data = query_data['data']
+    movie_id = query_data['movie_id']
     if 'back_to' in query_data:
         back_to = query_data['back_to']
     else:
