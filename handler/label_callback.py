@@ -122,7 +122,8 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
                     'movie_id': movie_id,
                     'more_label': query_data['more_label'],
                     'added_label': added_label,
-                    **back_object
+                    'back_to': 'label_callback',
+                    'back_with_data': query_data
                 }, chatbot().db))]])
         else:
             if len(again_more_labels) != 0:
@@ -138,29 +139,30 @@ def label_callback(query: CallbackQuery, query_data, update: Update, context: Ca
             'command': 'custom_label',
             'movie_id': movie_id,
             'more_label': query_data['more_label'],
-            **back_object
+            'back_to': 'label_callback',
+            'back_with_data': query_data
         }, chatbot().db))]])
         button.extend([[InlineKeyboardButton('write comment', callback_data=callback('label_callback', {
             'command': 'write_comment',
             'movie_id': movie_id,
             'label': None,
-            **back_object
+            'back_to': 'label_callback',
+            'back_with_data': query_data
         }, chatbot().db))]])
         button.extend([[InlineKeyboardButton('cancel and exit', callback_data=callback('label_callback', {
             'command': 'cancel_and_exit',
             'movie_id': movie_id,
             'label': None,
-            **back_object
+            'back_to': 'label_callback',
+            'back_with_data': query_data
         }, chatbot().db))]])
         if back_to is not None:
             button.append([
                 InlineKeyboardButton('\u25c0 Go Back', callback_data=callback(back_to, back_with_data, chatbot().db))
             ])
-        label = query_data['label']
-        query.edit_message_text("You add a label 【 {} 】 to the movie".format(label))
         reply_markup = InlineKeyboardMarkup(button)
-        context.bot.send_message(query.message.chat_id, text='Please choose a label for this movie:',
-                                 reply_markup=reply_markup)
+        query.edit_message_text('Please choose a label for this movie:')
+        query.edit_message_reply_markup(reply_markup)
     if command == 'custom_label':
         query.edit_message_text('Please give your label to the movie')
         callback_chat(update.effective_chat, 'custom_label_callback', {

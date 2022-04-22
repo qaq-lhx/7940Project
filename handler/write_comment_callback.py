@@ -8,14 +8,14 @@ from handler import GetChatbot
 
 def write_comment_callback(query: CallbackQuery, query_data, update: Update, context: CallbackContext):
     comment = query_data['text']
-    query_data = query_data['data']
-    movie_id = query_data['movie_id']
-    if 'back_to' in query_data:
-        back_to = query_data['back_to']
+    query_data_data = query_data['data']
+    movie_id = query_data_data['movie_id']
+    if 'back_to' in query_data_data:
+        back_to = query_data_data['back_to']
     else:
         back_to = None
-    if 'back_with_data' in query_data:
-        back_with_data = query_data['back_with_data']
+    if 'back_with_data' in query_data_data:
+        back_with_data = query_data_data['back_with_data']
     else:
         back_with_data = None
     feedback.add_comment(movie_id, comment, chatbot().db)

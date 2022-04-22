@@ -9,21 +9,21 @@ from handler import GetChatbot
 
 def custom_label_callback(query: CallbackQuery, query_data, update: Update, context: CallbackContext):
     custom_label = query_data['text']
-    query_data = query_data['data']
-    movie_id = query_data['movie_id']
-    if 'back_to' in query_data:
-        back_to = query_data['back_to']
+    query_data_data = query_data['data']
+    movie_id = query_data_data['movie_id']
+    if 'back_to' in query_data_data:
+        back_to = query_data_data['back_to']
     else:
         back_to = None
-    if 'back_with_data' in query_data:
-        back_with_data = query_data['back_with_data']
+    if 'back_with_data' in query_data_data:
+        back_with_data = query_data_data['back_with_data']
     else:
         back_with_data = None
     has_insert_this_time = False
-    if 'inserted' not in query_data or query_data['inserted'] is not True:
+    if 'inserted' not in query_data_data or query_data_data['inserted'] is not True:
         add_label_to_db(movie_id, custom_label, chatbot().db)
         has_insert_this_time = True
-        query_data['inserted'] = True
+        query_data_data['inserted'] = True
     button = [[InlineKeyboardButton('Yes', callback_data=callback('label_callback', {
         'command': 'write_comment',
         'movie_id': movie_id,
