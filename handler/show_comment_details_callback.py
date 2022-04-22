@@ -35,7 +35,7 @@ def show_comment_details_callback(query: CallbackQuery, query_data, update: Upda
         back_to_button = []
     else:
         back_to_button = [
-            InlineKeyboardButton('\u25c0 Go Back', callback_data=callback(back_to, back_with_data, chatbot().db))
+            [InlineKeyboardButton('\u25c0 Go Back', callback_data=callback(back_to, back_with_data, chatbot().db))]
         ]
     likes_count_text = ''
     if likes_count > 0:
@@ -61,26 +61,24 @@ def show_comment_details_callback(query: CallbackQuery, query_data, update: Upda
         like_action_object = {'set_reaction': None}
     elif user_reaction is False:
         dislike_action_object = {'set_reaction': None}
-    reply_markup = InlineKeyboardMarkup([
-        back_to_button + [
-            InlineKeyboardButton(like_button_text, callback_data=callback(
-                'show_comment_details_callback',
-                {
-                    **like_action_object,
-                    **query_data
-                },
-                chatbot().db
-            )),
-            InlineKeyboardButton(dislike_button_text, callback_data=callback(
-                'show_comment_details_callback',
-                {
-                    **dislike_action_object,
-                    **query_data
-                },
-                chatbot().db
-            ))
-        ],
-    ])
+    reply_markup = InlineKeyboardMarkup([[
+        InlineKeyboardButton(like_button_text, callback_data=callback(
+            'show_comment_details_callback',
+            {
+                **like_action_object,
+                **query_data
+            },
+            chatbot().db
+        )),
+        InlineKeyboardButton(dislike_button_text, callback_data=callback(
+            'show_comment_details_callback',
+            {
+                **dislike_action_object,
+                **query_data
+            },
+            chatbot().db
+        ))
+    ]] + back_to_button)
     if comment is None:
         message = get_some_random_words('no_comment')
     else:
