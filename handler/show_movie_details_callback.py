@@ -54,14 +54,19 @@ def show_movie_details_callback(query: CallbackQuery, query_data, update: Update
     else:
         show_comments_button = []
     reply_markup = InlineKeyboardMarkup([
-        back_to_button + [
-            # Click to evaluate the movie
+        [
             InlineKeyboardButton('Rate This Movie', callback_data=callback(
                 'evaluate',
-                {'movie_id': movie_id, 'movie': movie[1]},
+                {
+                    'movie_id': movie_id,
+                    'movie': movie[1],
+                    'back_to': 'show_movie_details_callback',
+                    'back_with_data': query_data,
+                },
                 chatbot().db
             )),
         ] + show_comments_button,
+        back_to_button
     ])
     if movie is None:
         message = get_some_random_words('no_movie_details')
