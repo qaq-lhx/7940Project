@@ -80,14 +80,13 @@ def new_recommend(query, query_data, update: Update, context: CallbackContext):
     elif 'recommend_keywords' in query_data:
         keywords = query_data['recommend_keywords']
     else:
+        text = get_some_random_words('need_genre')
+        reply_markup = build_genre_selector(back_to, back_with_data, chatbot().db)
         if query is None:
-            update.message.reply_text(
-                get_some_random_words('need_genre'),
-                reply_markup=build_genre_selector(back_to, back_with_data, chatbot().db)
-            )
+            update.message.reply_text(text, reply_markup=reply_markup)
         else:
-            query.edit_message_text(get_some_random_words('need_genre'))
-            query.edit_message_reply_markup(build_genre_selector(back_to, back_with_data, chatbot().db))
+            query.edit_message_text(text)
+            query.edit_message_reply_markup(reply_markup)
         return
     message, reply_markup = build_recommend_results(
         keywords,

@@ -94,13 +94,23 @@ def search_movie_in_db(keywords: List[str], excluded_ids: List[int], limit: int,
 
 def get_genres_in_db(db) -> List[str]:
     cursor = db.cursor()
+    cursor.execute("""select genre
+            from Genre
+            order by genre;""")
+    results = cursor.fetchall()
+    if len(results) > 0:
+        cursor.close()
+        return [result[0] for result in results]
     cursor.execute("""select distinct genres
         from MovieInfo
         where genres != '(no genres listed)'
         order by genres;""")
     genres = list(set([genre for result in cursor.fetchall() for genre in result[0].split('|')]))
-    cursor.close()
     genres.sort()
+    for genre in genres:
+        cursor.execute("""insert into Genre (genre) values (%s);""", (genre,))
+    cursor.close()
+    db.commit()
     return genres
 
 
