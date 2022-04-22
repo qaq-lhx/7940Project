@@ -18,10 +18,10 @@ def show_movie_info(query, query_data, update: Update, context: CallbackContext)
             'action': 'recommend_again',
             'recommend_keywords': keywords
         }, chatbot().db)),
-        #click to evaluate a movie
-        InlineKeyboardButton('evaluate',callback_data=callback('evaluate',{'movie_id':movie_id}, chatbot().db)),
-        #click to view comment of a movie
-        InlineKeyboardButton('comment',callback_data=callback('view',{'movie_id':movie_id}, chatbot().db))],
+         # click to evaluate a movie
+         InlineKeyboardButton('evaluate', callback_data=callback('evaluate', {'movie_id': movie_id}, chatbot().db)),
+         # click to view comment of a movie
+         InlineKeyboardButton('comment', callback_data=callback('view', {'movie_id': movie_id}, chatbot().db))],
     ])
     if movie is None:
         message = 'Oops! I\'m sorry. I can\'t tell you more about the movie.'
@@ -40,8 +40,16 @@ def show_movie_info(query, query_data, update: Update, context: CallbackContext)
 
 def recommend_again(query, query_data, update: Update, context: CallbackContext):
     keywords = query_data['recommend_keywords']
-    message, reply_markup = build_recommend_results(keywords, recommend_movie_in_db(keywords, chatbot().db),
-                                                    chatbot().db)
+    if 'back_to' in query_data:
+        back_to = query_data['back_to']
+    else:
+        back_to = None
+    if 'back_with_data' in query_data:
+        back_with_data = query_data['back_with_data']
+    else:
+        back_with_data = None
+    message, reply_markup = build_recommend_results(keywords, recommend_movie_in_db(keywords, chatbot().db), back_to,
+                                                    back_with_data, chatbot().db)
     if reply_markup is None:
         query.edit_message_text(message)
         return

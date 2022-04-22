@@ -28,7 +28,13 @@ def build_search_results(results_id: Optional[int], results: List[Tuple[int, str
         if update_markup_only:
             return None, None
         else:
-            return get_some_random_words('found_no_movie'), None
+            if back_to is None:
+                return get_some_random_words('found_no_movie'), None
+            else:
+                return get_some_random_words('found_no_movie'), InlineKeyboardMarkup([[
+                    InlineKeyboardButton('\u25c0 Go Back',
+                                         callback_data=callback(back_to, back_with_data, chatbot().db))
+                ]])
     if results_id is None:
         results_id = store(json.dumps(results), db)
     total = len(results)

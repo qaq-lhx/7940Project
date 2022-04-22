@@ -48,6 +48,15 @@ Words = {
     'need_help_keyword': [
         'What can I do for you?'
     ],
+    'recommended_no_movie': [
+        'I can\'t recommend any movie to you.',
+    ],
+    'recommended_a_movie': [
+        'Here is the movie I picked to you:',
+    ],
+    'recommended_some_movies': [
+        'Here are the movies I picked to you:',
+    ],
     'start_tip': [
         'If you want to ask me how to start, just type /start.',
         'By the way, you can type /start to start.',
