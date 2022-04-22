@@ -29,4 +29,8 @@ def undo_callback_chat(callback_chat_instance: int, db):
 
 def undo_callback_chat_all(chat: Optional['Chat'], db):
     if chat is not None:
-        remove_chat_all(chat.id, db)
+        undo_callback_chat_all_by_chat_id(chat.id, db)
+
+
+def undo_callback_chat_all_by_chat_id(chat_id: int, db):
+    remove_chat_all(chat_id, db)
